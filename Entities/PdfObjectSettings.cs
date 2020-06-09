@@ -5,6 +5,7 @@
         /// <summary>
         /// Table of content settings
         /// </summary>
+        [SubClassSettings]
         public TableOfContentSettings TableOfContentSettings { get; } = new TableOfContentSettings();
         
         /// <summary>

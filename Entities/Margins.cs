@@ -3,7 +3,7 @@
     /// <summary>
     /// Size of the margins in millimeters
     /// </summary>
-    public struct Margins
+    public class Margins
     {
         /// <summary>
         /// Size of the top margin
@@ -28,6 +28,10 @@
         /// </summary>
         [Settings("margin.right", SpecifyUnitsType = true)]
         public float? Right { get; set; }
+
+        public Margins()
+        {
+        }
 
         public Margins(float? top, float? bottom, float? left, float? right)
         {

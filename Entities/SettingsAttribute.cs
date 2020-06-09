@@ -2,7 +2,7 @@
 
 namespace HtmlToPdfSharp.Entities
 {
-    public enum UnitsType { None, Centimeters, Millimeters, Inches }
+    public enum UnitsType { Centimeters, Millimeters, Inches }
 
     public class SettingsAttribute : Attribute
     {
@@ -14,5 +14,9 @@ namespace HtmlToPdfSharp.Entities
         {
             Name = name;
         }
+    }
+
+    public class SubClassSettingsAttribute : Attribute
+    {
     }
 }

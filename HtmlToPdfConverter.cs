@@ -26,6 +26,10 @@ namespace HtmlToPdfSharp
         /// </summary>
         public event EventHandler<string> PhaseChanged;
 
+        public PdfGlobalSettings PdfGlobalSettings { get; } = new PdfGlobalSettings();
+
+        public PdfObjectSettings PdfObjectSettings { get; } = new PdfObjectSettings();
+
         /// <summary> 
         /// Web page specific settings
         /// </summary>
@@ -50,6 +54,8 @@ namespace HtmlToPdfSharp
         /// Warnings occured during last HTML conversion
         /// </summary>
         public string ConversionWarnings { get; set; }
+
+        public UnitsType UnitsType { get; set; } = UnitsType.Millimeters;
         
         /// <summary>
         /// Html to pdf converter
@@ -83,41 +89,52 @@ namespace HtmlToPdfSharp
                 Finished?.Invoke(this, resultCode);
             };
             wkHtmlToPdfWrapper.WarningEvent += warningsMessage => ConversionWarnings = warningsMessage;
-            SetObjectSettings(WebSettings, "web.");
-            SetObjectSettings(LoadSettings, "load.");
-            SetObjectSettings(HeaderSettings, "header.");
-            SetObjectSettings(FooterSettings, "footer.");
+            PdfGlobalSettings.Margins.Top = 10;
+
+            SetObjectSettings(PdfGlobalSettings);
+            SetObjectSettings(PdfObjectSettings);
+            SetObjectSettings(WebSettings);
+            SetObjectSettings(LoadSettings);
+            SetObjectSettings(HeaderSettings);
+            SetObjectSettings(FooterSettings);
             wkHtmlToPdfWrapper.convert();
 
             if (result == 0)
                 throw new HtmlConversionException(errorMessage);
         }
 
-        private void SetObjectSettings<T>(T settings, string prefix)
+        private void SetObjectSettings<T>(T settings)
         {
             var type = settings.GetType();
             foreach (var propertyInfo in type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(prop => prop.CanRead))
             {
-                var attribute = propertyInfo.GetCustomAttribute<SettingsAttribute>();
+                var attributes = propertyInfo.GetCustomAttributes().ToArray();
+                if (attributes.Any(attr => attr is SubClassSettingsAttribute))
+                    SetObjectSettings(propertyInfo.GetValue(settings));
+
+                var attribute = attributes.OfType<SettingsAttribute>().FirstOrDefault();
                 if (attribute == null)
                     continue;
 
                 var value = propertyInfo.GetValue(settings);
                 if (value == null)
                     continue;
-                
+
+                string textValue;
                 switch (value)
                 {
                     case bool boolValue:
-                        wkHtmlToPdfWrapper.set_object_settings(prefix + attribute.Name, boolValue ? "true" : "false");
+                        textValue = boolValue ? "true" : "false";
                         break;
                     case Enum enumValue:
-                        wkHtmlToPdfWrapper.set_object_settings(prefix + attribute.Name, enumValue.ToString("G"));
+                        textValue = enumValue.ToString("G");
                         break;
                     default:
-                        wkHtmlToPdfWrapper.set_object_settings(prefix + attribute.Name, value.ToString());
+                        textValue = value.ToString();
                         break;
                 }
+
+                wkHtmlToPdfWrapper.set_object_settings(attribute.Name, $"{textValue}{(attribute.SpecifyUnitsType ? UnitsType.GetShortName() : null)}");
             }
         }
 

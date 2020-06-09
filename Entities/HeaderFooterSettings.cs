@@ -9,7 +9,7 @@
         /// The font size to use for the header, e.g. "13"
         /// </summary>
         [Settings("fontSize")]
-        public int FontSize { get; set; }
+        public int? FontSize { get; set; }
 
         /// <summary>
         /// The name of the font to use for the header.e.g. "times"
@@ -39,7 +39,7 @@
         /// Whether a line should be printed under the header
         /// </summary>
         [Settings("line")]
-        public bool Line { get; set; }
+        public bool? Line { get; set; }
 
         /// <summary>
         /// The amount of space to put between the header and the content, e.g. "1.8".
@@ -47,7 +47,7 @@
         /// This can be corrected with the margin.top setting.
         /// </summary>
         [Settings("spacing")]
-        public float Spacing { get; set; }
+        public float? Spacing { get; set; }
 
         /// <summary>
         /// Url for a HTML document to use for the header
