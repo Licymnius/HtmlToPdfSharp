@@ -2,9 +2,17 @@
 
 namespace HtmlToPdfSharp
 {
-    public static class UnitTypeExtensions
+    /// <summary>
+    /// Extensions for different types
+    /// </summary>
+    internal static class UnitTypeExtensions
     {
-        public static string GetShortName(this UnitsType unitsType)
+        /// <summary>
+        /// Getting measure units short name
+        /// </summary>
+        /// <param name="unitsType">Unit type</param>
+        /// <returns>Units shortName</returns>
+        internal static string GetShortName(this UnitsType unitsType)
         {
             switch (unitsType)
             {
