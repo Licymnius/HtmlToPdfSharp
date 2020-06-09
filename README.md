@@ -1,2 +1,2 @@
 # HtmlToPdfSharp
-HtmlToPdf converter library for .Net
+Html to pdf converter library for .Net
