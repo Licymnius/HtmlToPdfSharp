@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using HtmlToPdfSharp.Entities;
+using HtmlToPdfSharp.Entities.Settings;
 using wk_html_to_pdf_wrapper;
 
 namespace HtmlToPdfSharp

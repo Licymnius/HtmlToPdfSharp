@@ -1,4 +1,4 @@
-﻿namespace HtmlToPdfSharp.Entities
+﻿namespace HtmlToPdfSharp.Entities.Settings
 {
     public enum LoadErrorHandling { Abort, Skip, Ignore }
 

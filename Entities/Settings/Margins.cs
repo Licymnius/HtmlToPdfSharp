@@ -1,4 +1,4 @@
-﻿namespace HtmlToPdfSharp.Entities
+﻿namespace HtmlToPdfSharp.Entities.Settings
 {
     /// <summary>
     /// Size of the margins in millimeters
