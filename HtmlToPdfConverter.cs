@@ -27,8 +27,14 @@ namespace HtmlToPdfSharp
         /// </summary>
         public event EventHandler<string> PhaseChanged;
 
+        /// <summary>
+        /// Pdf conversion global settings
+        /// </summary>
         public PdfGlobalSettings PdfGlobalSettings { get; } = new PdfGlobalSettings();
 
+        /// <summary>
+        /// Pdf conversion object settings
+        /// </summary>
         public PdfObjectSettings PdfObjectSettings { get; } = new PdfObjectSettings();
 
         /// <summary> 
