@@ -1,4 +1,5 @@
-﻿using HtmlToPdfSharp.Entities;
+﻿using System.Text.RegularExpressions;
+using HtmlToPdfSharp.Entities;
 
 namespace HtmlToPdfSharp
 {
@@ -25,6 +26,11 @@ namespace HtmlToPdfSharp
                 default:
                     return "";
             }
+        }
+
+        internal static bool IsHtml(this string value)
+        {
+            return Regex.IsMatch(value, @"<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+");
         }
     }
 }

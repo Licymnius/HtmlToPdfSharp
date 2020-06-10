@@ -113,12 +113,13 @@ namespace wk_html_to_pdf_wrapper
 			wkhtmltopdf_add_object(converter, object_settings, nullptr);
 
 			//Perform conversion
-			wkhtmltopdf_convert(converter);
+			wkhtmltopdf_convert(converter);				
 		}
 		finally
 		{
-			if (converter != nullptr)
-				wkhtmltopdf_destroy_converter(converter);
+			wkhtmltopdf_destroy_converter(converter);
+			wkhtmltopdf_destroy_global_settings(global_settings);
+			wkhtmltopdf_destroy_object_settings(object_settings);	
 		}		
 	}
 }

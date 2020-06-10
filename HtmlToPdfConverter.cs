@@ -11,6 +11,9 @@ namespace HtmlToPdfSharp
     public class HtmlToPdfConverter : IDisposable
     {
         private readonly wkhtmltopdf_wrapper wkHtmlToPdfWrapper = new wkhtmltopdf_wrapper();
+
+        private readonly Stream inputStream;
+        private string htmlString;
         
         /// <summary>
         /// Conversion progress percentage changed, integer parameter returns progress percentage
@@ -65,28 +68,70 @@ namespace HtmlToPdfSharp
         public UnitsType UnitsType { get; set; } = UnitsType.Millimeters;
         
         /// <summary>
-        /// Html to pdf converter
-        /// </summary>
-        /// <param name="fileName">The URL or path of the input file</param>
-        public HtmlToPdfConverter(string fileName)
-        {
-            wkHtmlToPdfWrapper.set_object_settings("page", fileName);
-        }
-
-        public HtmlToPdfConverter(Stream stream)
-        {
-        }
-
-        /// <summary>
         /// Start conversion process
         /// </summary>
         /// <param name="outputFile">Output file</param>
-        public void Convert(string outputFile)
+        public void Convert(string file, string outputFile)
+        {
+            if (file.IsHtml())
+                htmlString = file;
+            else
+                PdfObjectSettings.Page = file;
+
+            if (inputStream == null && string.IsNullOrWhiteSpace(htmlString))
+            {
+                PerformConvert(outputFile);
+                return;
+            }
+            
+            var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+            try
+            {
+                if (inputStream != null)
+                    using (var fileStream = File.OpenWrite(tempFile))
+                    {
+                        inputStream.Seek(0, SeekOrigin.Begin);
+                        inputStream.CopyTo(fileStream);
+                    }
+                else
+                    File.WriteAllText(tempFile, htmlString);
+
+                PdfObjectSettings.Page = tempFile;
+                PerformConvert(outputFile);
+            }
+            finally
+            {
+                if (File.Exists(tempFile))
+                    File.Delete(tempFile);
+            }
+        }
+
+        public void Convert(string file, Stream stream)
+        {
+            if (stream == null)
+                throw new HtmlConversionException("Output stream cannot be null");
+            
+            var outputFile = Path.GetTempFileName();
+            PdfGlobalSettings.OutputFile = outputFile;
+            try
+            {
+                Convert(outputFile, file);
+                using (var outputStream = File.OpenRead(outputFile))
+                    outputStream.CopyTo(stream);
+            }
+            finally
+            {
+                if (File.Exists(outputFile))
+                    File.Delete(outputFile);
+            }
+        }
+
+        private void PerformConvert(string outputFile)
         {
             ConversionWarnings = null;
             string errorMessage = null;
             var result = 0;
-            wkHtmlToPdfWrapper.set_global_settings("out", outputFile);
+            PdfGlobalSettings.OutputFile = outputFile;
             wkHtmlToPdfWrapper.ProgressEvent += percentage => ProgressChanged?.Invoke(this, percentage);
             wkHtmlToPdfWrapper.PhaseEvent += phaseDescription => PhaseChanged?.Invoke(this, phaseDescription);
             wkHtmlToPdfWrapper.ErrorEvent += errorText => errorMessage = errorText;
@@ -96,28 +141,27 @@ namespace HtmlToPdfSharp
                 Finished?.Invoke(this, resultCode);
             };
             wkHtmlToPdfWrapper.WarningEvent += warningsMessage => ConversionWarnings = warningsMessage;
-            PdfGlobalSettings.Margins.Top = 10;
 
-            SetObjectSettings(PdfGlobalSettings);
-            SetObjectSettings(PdfObjectSettings);
-            SetObjectSettings(WebSettings);
-            SetObjectSettings(LoadSettings);
-            SetObjectSettings(HeaderSettings);
-            SetObjectSettings(FooterSettings);
+            SetObjectSettings(PdfGlobalSettings, true);
+            SetObjectSettings(PdfObjectSettings, false);
+            SetObjectSettings(WebSettings, false);
+            SetObjectSettings(LoadSettings, false);
+            SetObjectSettings(HeaderSettings, false);
+            SetObjectSettings(FooterSettings, true);
             wkHtmlToPdfWrapper.convert();
 
             if (result == 0)
                 throw new HtmlConversionException(errorMessage);
         }
 
-        private void SetObjectSettings<T>(T settings)
+        private void SetObjectSettings<T>(T settings, bool globalSettings)
         {
             var type = settings.GetType();
             foreach (var propertyInfo in type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(prop => prop.CanRead))
             {
                 var attributes = propertyInfo.GetCustomAttributes().ToArray();
                 if (attributes.Any(attr => attr is SubClassSettingsAttribute))
-                    SetObjectSettings(propertyInfo.GetValue(settings));
+                    SetObjectSettings(propertyInfo.GetValue(settings), globalSettings);
 
                 var attribute = attributes.OfType<SettingsAttribute>().FirstOrDefault();
                 if (attribute == null)
@@ -141,7 +185,10 @@ namespace HtmlToPdfSharp
                         break;
                 }
 
-                wkHtmlToPdfWrapper.set_object_settings(attribute.Name, $"{textValue}{(attribute.SpecifyUnitsType ? UnitsType.GetShortName() : null)}");
+                if (globalSettings)
+                    wkHtmlToPdfWrapper.set_global_settings(attribute.Name, $"{textValue}{(attribute.SpecifyUnitsType ? UnitsType.GetShortName() : null)}");
+                else
+                    wkHtmlToPdfWrapper.set_object_settings(attribute.Name, $"{textValue}{(attribute.SpecifyUnitsType ? UnitsType.GetShortName() : null)}");
             }
         }
 
