@@ -8,13 +8,16 @@ using wk_html_to_pdf_wrapper;
 
 namespace HtmlToPdfSharp
 {
+    /// <summary>
+    /// Html to pdf converter
+    /// </summary>
     public class HtmlToPdfConverter : IDisposable
     {
+        /// <summary>
+        /// WkHtmlToPdf wrapper
+        /// </summary>
         private readonly wkhtmltopdf_wrapper wkHtmlToPdfWrapper = new wkhtmltopdf_wrapper();
 
-        private readonly Stream inputStream;
-        private string htmlString;
-        
         /// <summary>
         /// Conversion progress percentage changed, integer parameter returns progress percentage
         /// </summary>
@@ -65,37 +68,29 @@ namespace HtmlToPdfSharp
         /// </summary>
         public string ConversionWarnings { get; set; }
 
+        /// <summary>
+        /// Measure units type
+        /// </summary>
         public UnitsType UnitsType { get; set; } = UnitsType.Millimeters;
-        
+
         /// <summary>
         /// Start conversion process
         /// </summary>
+        /// <param name="file">Input file path or Url or the content of the file in string</param>
         /// <param name="outputFile">Output file</param>
         public void Convert(string file, string outputFile)
         {
-            if (file.IsHtml())
-                htmlString = file;
-            else
-                PdfObjectSettings.Page = file;
-
-            if (inputStream == null && string.IsNullOrWhiteSpace(htmlString))
+            if (!file.IsHtml())
             {
+                PdfObjectSettings.Page = file;
                 PerformConvert(outputFile);
                 return;
             }
-            
+
             var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
             try
             {
-                if (inputStream != null)
-                    using (var fileStream = File.OpenWrite(tempFile))
-                    {
-                        inputStream.Seek(0, SeekOrigin.Begin);
-                        inputStream.CopyTo(fileStream);
-                    }
-                else
-                    File.WriteAllText(tempFile, htmlString);
-
+                File.WriteAllText(tempFile, file);
                 PdfObjectSettings.Page = tempFile;
                 PerformConvert(outputFile);
             }
@@ -106,6 +101,11 @@ namespace HtmlToPdfSharp
             }
         }
 
+        /// <summary>
+        /// Start conversion process
+        /// </summary>
+        /// <param name="file">Input file path or Url or the content of the file in string</param>
+        /// <param name="stream">Output stream</param>
         public void Convert(string file, Stream stream)
         {
             if (stream == null)
@@ -115,7 +115,7 @@ namespace HtmlToPdfSharp
             PdfGlobalSettings.OutputFile = outputFile;
             try
             {
-                Convert(outputFile, file);
+                Convert(file, outputFile);
                 using (var outputStream = File.OpenRead(outputFile))
                     outputStream.CopyTo(stream);
             }
@@ -126,6 +126,68 @@ namespace HtmlToPdfSharp
             }
         }
 
+        /// <summary>
+        /// Start conversion process
+        /// </summary>
+        /// <param name="inputStream">Html stream</param>
+        /// <param name="stream">Output stream</param>
+        public void Convert(Stream inputStream, Stream stream)
+        {
+            var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+            try
+            {
+                using (var fileStream = File.OpenWrite(tempFile))
+                {
+                    inputStream.Seek(0, SeekOrigin.Begin);
+                    inputStream.CopyTo(fileStream);
+                }
+
+                Convert(tempFile, stream);
+            }
+            finally
+            {
+                if (File.Exists(tempFile))
+                    File.Delete(tempFile);
+            }
+        }
+
+        /// <summary>
+        /// Start conversion process
+        /// </summary>
+        /// <param name="inputStream">Html stream</param>
+        /// <param name="outputFile">Output file</param>
+        public void Convert(Stream inputStream, string outputFile)
+        {
+            var tempFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid() + ".html");
+            try
+            {
+                using (var fileStream = File.OpenWrite(tempFile))
+                {
+                    inputStream.Seek(0, SeekOrigin.Begin);
+                    inputStream.CopyTo(fileStream);
+                }
+
+                Convert(tempFile, outputFile);
+            }
+            finally
+            {
+                if (File.Exists(tempFile))
+                    File.Delete(tempFile);
+            }
+        }
+
+        /// <summary>
+        /// Deinitialization of the wkhtmltopdf, use it only just before your application closing, cause the restriction of the wkhtmltopdf
+        /// </summary>
+        public static void DeInit()
+        {
+            wkhtmltopdf_wrapper.deinit_wkhtmltopdf();
+        }
+
+        /// <summary>
+        /// Inner conversion
+        /// </summary>
+        /// <param name="outputFile">Output file</param>
         private void PerformConvert(string outputFile)
         {
             ConversionWarnings = null;
@@ -147,13 +209,18 @@ namespace HtmlToPdfSharp
             SetObjectSettings(WebSettings, false);
             SetObjectSettings(LoadSettings, false);
             SetObjectSettings(HeaderSettings, false);
-            SetObjectSettings(FooterSettings, true);
+            SetObjectSettings(FooterSettings, false);
             wkHtmlToPdfWrapper.convert();
 
             if (result == 0)
                 throw new HtmlConversionException(errorMessage);
         }
 
+        /// <summary>
+        /// Fill settings
+        /// </summary>
+        /// <param name="settings">Settings collection</param>
+        /// <param name="globalSettings">Global settings, if not object settings</param>
         private void SetObjectSettings<T>(T settings, bool globalSettings)
         {
             var type = settings.GetType();
@@ -192,6 +259,9 @@ namespace HtmlToPdfSharp
             }
         }
 
+        /// <summary>
+        /// Disposing converter
+        /// </summary>
         public void Dispose()
         {
             wkHtmlToPdfWrapper.Dispose();

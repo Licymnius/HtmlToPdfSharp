@@ -27,6 +27,7 @@ namespace wk_html_to_pdf_wrapper
 		static void progress_changed(int percentage);
 		static void finished(int result_code);
 		static void phase_changed(const char* phase_description);
+		static void deinit_wkhtmltopdf();
 	};
 	
 }

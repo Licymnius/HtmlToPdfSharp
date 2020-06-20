@@ -28,6 +28,11 @@ namespace HtmlToPdfSharp
             }
         }
 
+        /// <summary>
+        /// Detecting whether string is an HTML content or not
+        /// </summary>
+        /// <param name="value">String value</param>
+        /// <returns>Whether string is an HTML content or not</returns>
         internal static bool IsHtml(this string value)
         {
             return Regex.IsMatch(value, @"<!doctype html>|(<html\b[^>]*>|<body\b[^>]*>|<x-[^>]+>)+");

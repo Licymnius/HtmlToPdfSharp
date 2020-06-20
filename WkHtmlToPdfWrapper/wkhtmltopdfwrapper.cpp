@@ -22,11 +22,12 @@ namespace wk_html_to_pdf_wrapper
 		wkhtmltopdf_init(false);		
 		global_settings = wkhtmltopdf_create_global_settings();
 		object_settings = wkhtmltopdf_create_object_settings();		
-	}	
+	}
 
 	wkhtmltopdf_wrapper::~wkhtmltopdf_wrapper()
-	{		
-		wkhtmltopdf_deinit();
+	{
+		wkhtmltopdf_destroy_global_settings(global_settings);
+		wkhtmltopdf_destroy_object_settings(object_settings);
 	}
 
 	void wkhtmltopdf_wrapper::set_global_settings(System::String^ parameter, System::String^ value)
@@ -89,6 +90,11 @@ namespace wk_html_to_pdf_wrapper
 		wrapper->PhaseEvent(gcnew System::String(phase_description));
 	}
 		
+	void wkhtmltopdf_wrapper::deinit_wkhtmltopdf()
+	{
+		wkhtmltopdf_deinit();
+	}
+
 	/// <summary>
 	/// Start conversion process
 	/// </summary>
@@ -118,8 +124,6 @@ namespace wk_html_to_pdf_wrapper
 		finally
 		{
 			wkhtmltopdf_destroy_converter(converter);
-			wkhtmltopdf_destroy_global_settings(global_settings);
-			wkhtmltopdf_destroy_object_settings(object_settings);	
 		}		
 	}
 }
