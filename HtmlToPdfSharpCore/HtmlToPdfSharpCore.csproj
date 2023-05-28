@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WkHtmlToPdfWrapperCore\WkHtmlToPdfWrapperCore.vcxproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="if $(Platform) == x64 (&#xD;&#xA;  copy &quot;$(ProjectDir)\..\wkhtmltox\dll_x64\*.*&quot; &quot;$(TargetDir)&quot; /y&#xD;&#xA;) ELSE (&#xD;&#xA;  copy &quot;$(ProjectDir)\..\wkhtmltox\dll_x86\*.*&quot; &quot;$(TargetDir)&quot; /y&#xD;&#xA;)&#xD;&#xA;" />
+  </Target>
+
+</Project>

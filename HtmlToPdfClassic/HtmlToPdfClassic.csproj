@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3047E930-1D69-4A3D-85AB-3BEF2344C1BB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HtmlToPdfClassic</RootNamespace>
+    <AssemblyName>HtmlToPdfClassic</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Entities\HtmlConversionException.cs" />
+    <Compile Include="Entities\HtmlConversionProgressEventArgs.cs" />
+    <Compile Include="Entities\SettingsAttribute.cs" />
+    <Compile Include="Entities\Settings\HeaderFooterSettings.cs" />
+    <Compile Include="Entities\Settings\LoadSettings.cs" />
+    <Compile Include="Entities\Settings\Margins.cs" />
+    <Compile Include="Entities\Settings\PdfGlobalSettings.cs" />
+    <Compile Include="Entities\Settings\PdfObjectSettings.cs" />
+    <Compile Include="Entities\Settings\TableOfContentSettings.cs" />
+    <Compile Include="Entities\Settings\WebSettings.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="HtmlToPdfConverter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WkHtmlToPdfWrapperClassic\WkHtmlToPdfWrapperClassic.vcxproj">
+      <Project>{2774890e-de2f-4f3a-9e11-51ccf6e146c1}</Project>
+      <Name>WkHtmlToPdfWrapperClassic</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if $(Platform) == x64 (
+  copy "$(ProjectDir)\..\wkhtmltox\dll_x64\*.*" "$(TargetDir)" /y
+) ELSE (
+  copy "$(ProjectDir)\..\wkhtmltox\dll_x86\*.*" "$(TargetDir)" /y
+)</PostBuildEvent>
+  </PropertyGroup>
+</Project>
