@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>HtmlToPdfSharp</id>
+    <version>2.0.3</version>
+    <title>HtmlToPdfSharp</title>
+    <authors>Alexander Slashchyouv</authors>
+    <owners></owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <projectUrl>https://github.com/Licymnius/HtmlToPdfSharp#readme</projectUrl>
+    <description>bar</description>
+    <releaseNotes>Further experimenting with nuget</releaseNotes>
+    <copyright>Alexander Slashchyouv</copyright>
+    <dependencies>
+      <group targetFramework=".NETFramework4.6.1" />
+      <group targetFramework="net6.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="lib\net48\HtmlToPdfSharpClassic.dll" target="lib\net461\HtmlToPdfSharpClassic.dll" />
+    <file src="lib\net48\x64\*.dll" target="build\net461\x64" />
+    <file src="lib\net48\x86\*.dll" target="build\net461\x86" />
+    <file src="lib\net6.0\x64\*.dll" target="build\net6.0\x64" />
+    <file src="lib\net6.0\x86\*.dll" target="build\net6.0\x86" />
+    <file src="lib\net6.0\HtmlToPdfSharpCore.dll" target="lib\net6.0\HtmlToPdfSharpCore.dll" />
+    <file src="HtmlToPdfSharpNet461.props" target="build\net461\HtmlToPdfSharp.props" />
+    <file src="HtmlToPdfSharpNetCore.props" target="build\net6.0\HtmlToPdfSharp.props" />
+  </files>
+</package>

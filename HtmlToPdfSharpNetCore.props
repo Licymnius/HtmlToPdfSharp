@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)x86\Ijwhost.dll" Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)x64\Ijwhost.dll" Condition="'$(Platform)' == 'x64'">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Reference Include="WkHtmlToPdfWrapperCore" Condition="'$(Platform)' == 'x86' Or '$(Platform)' == 'AnyCPU'">
+      <HintPath>$(MSBuildThisFileDirectory)x86\WkHtmlToPdfWrapperCore.dll</HintPath>
+    </Reference>
+    <Reference Include="WkHtmlToPdfWrapperCore" Condition="'$(Platform)' == 'x64'">
+      <HintPath>$(MSBuildThisFileDirectory)x64\WkHtmlToPdfWrapperCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

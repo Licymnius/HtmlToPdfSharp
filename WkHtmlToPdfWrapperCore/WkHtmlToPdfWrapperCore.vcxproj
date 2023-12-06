@@ -134,6 +134,10 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>..\wkhtmltox\lib_x86\wkhtmltox.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(TargetDir)\WkHtmlToPdfWrapperCore.dll" "$(ProjectDir)\..\lib\netcore\x86\" /y
+xcopy "$(TargetDir)\Ijwhost.dll" "$(ProjectDir)\..\lib\netcore\x86\" /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -153,6 +157,11 @@
       <NoEntryPoint>true</NoEntryPoint>
       <AdditionalDependencies>..\wkhtmltox\lib_x64\wkhtmltox.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent />
+    <PostBuildEvent>
+      <Command>xcopy "$(TargetDir)\WkHtmlToPdfWrapperCore.dll" "$(ProjectDir)\..\lib\netcore\x64\" /y
+xcopy "$(TargetDir)\Ijwhost.dll" "$(ProjectDir)\..\lib\netcore\x64\" /y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="wkhtmltopdfwrapper.cpp" />

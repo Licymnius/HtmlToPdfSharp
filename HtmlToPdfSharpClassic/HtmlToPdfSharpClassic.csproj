@@ -7,11 +7,12 @@
     <ProjectGuid>{3047E930-1D69-4A3D-85AB-3BEF2344C1BB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HtmlToPdfClassic</RootNamespace>
-    <AssemblyName>HtmlToPdfClassic</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <RootNamespace>HtmlToPdfSharpClassic</RootNamespace>
+    <AssemblyName>HtmlToPdfSharpClassic</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,10 +47,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="README.md" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WkHtmlToPdfWrapperClassic\WkHtmlToPdfWrapperClassic.vcxproj">
@@ -57,12 +56,11 @@
       <Name>WkHtmlToPdfWrapperClassic</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>if $(Platform) == x64 (
-  copy "$(ProjectDir)\..\wkhtmltox\dll_x64\*.*" "$(TargetDir)" /y
-) ELSE (
-  copy "$(ProjectDir)\..\wkhtmltox\dll_x86\*.*" "$(TargetDir)" /y
-)</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)\HtmlToPdfSharpClassic.dll" "$(ProjectDir)\..\lib\net48\" /y</PostBuildEvent>
   </PropertyGroup>
 </Project>
